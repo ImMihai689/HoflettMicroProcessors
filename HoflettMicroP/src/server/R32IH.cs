@@ -123,7 +123,7 @@ namespace HoflettMicroP
 
             // get immediate for each opcode type (exept register register) and do that instruction
             if(opcode == IonRop || opcode == Loadop || opcode == JALRop){ 
-                immediate = (long)((int)((instruction & 0b11111111111100000000000000000000) >> 20));
+                immediate = (long)(((int)(instruction & 0b11111111111100000000000000000000) >> 20));
                 if(opcode == IonRop)
                     RegisterImmediateInstruction();
                 else if (opcode == Loadop)
@@ -132,21 +132,27 @@ namespace HoflettMicroP
                     JALRfunc();
             } else
             if(opcode == Storeop){ 
-                immediate = (long)((int)(((instruction & 0b11111110000000000000000000000000) >> 20) | ((instruction & 0b00000000000000000000111110000000) >> 7)));
+                immediate = ((instruction & 0b11111110000000000000000000000000) >> 20) | ((instruction & 0b00000000000000000000111110000000) >> 7);
+                immediate = immediate << 52;
+                immediate = immediate >> 52;
                 Store();
             } else
             if(opcode == Branchop) {
-                immediate  = (instruction &      0b00000000000000000000111100000000) >> 7;
-                immediate |= (instruction &      0b01111110000000000000000000000000) >> 20;
-                immediate |= (instruction &                  0b00000000000000000000000010000000)   << 4;
-                immediate |= (long)((int)((instruction & 0b10000000000000000000000000000000) >> 19));
+                immediate  = (instruction & 0b00000000000000000000111100000000) >> 7;
+                immediate |= (instruction & 0b01111110000000000000000000000000) >> 20;
+                immediate |= (instruction & 0b00000000000000000000000010000000) << 4;
+                immediate |= (instruction & 0b10000000000000000000000000000000) >> 19;
+                immediate |= immediate << 51;
+                immediate |= immediate >> 51;
                 BranchInstruction();
             } else
             if(opcode == JALop){
-                immediate  = (instruction &    0b01111111111000000000000000000000) >> 20;
-                immediate |= (instruction &    0b00000000000100000000000000000000) >> 9;
-                immediate |= (instruction &    0b00000000000011111111000000000000);
-                immediate |= (long)((int)((instruction &    0b10000000000000000000000000000000) >> 11));
+                immediate  = (instruction & 0b01111111111000000000000000000000) >> 20;
+                immediate |= (instruction & 0b00000000000100000000000000000000) >> 9;
+                immediate |= (instruction & 0b00000000000011111111000000000000);
+                immediate |= (instruction & 0b10000000000000000000000000000000) >> 11;
+                immediate |= immediate << 43;
+                immediate |= immediate >> 43;
                 JALfunc();
             } else
             if(opcode == LUI || opcode == AUIPC){
@@ -189,6 +195,9 @@ namespace HoflettMicroP
             instructionPhase = 2;
         }
         protected void Loadpart2(){
+            Outputs[RB].On = false;
+            Outputs[RH].On = false;
+            Outputs[RW].On = false;
             long value = GetDataFromMemoryPins();
             if(func3 == 0x0){
                 value = (long)((sbyte)value);
