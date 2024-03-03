@@ -1,7 +1,7 @@
 # HoflettMicroProcessors
 Microprocessors for Logic World
 
-This mod adds just the RISC-V part, with a 32-bit interface to talk to memory.
+This mod adds a RISC-V microprocessor (R32I), with a 32-bit interface to talk to memory. (More in the future maybe)
 
 Put the HoflettMicroP folder in the GameData folder of the game.
 
@@ -22,7 +22,7 @@ Put the HoflettMicroP folder in the GameData folder of the game.
 On the first rising edge, PC is put on the address bus.
 On the second rising edge a word is read, preferably an instruction, and is executed in that tick and PC is incremented by 4, as per the manual. The following rising edge will be the next instruction's first rising edge.
 
-Store instructions put the data to be stored, the address to store is at, and the size of the data (Write select pin) on their respective outputs on the second rising edge of the instruction. Other that that it's like any other instruction.
+Store instructions put the data to be stored, the address to store is at, and the size of the data (Write select pin) on their respective outputs on the second falling edge of the instruction. Other that that it's like any other instruction.
 
 Load instructions put the address to read from and the size of the data (Read select pin) on the respective outputs on the second rising edge of the instruction, and on the third one it reads the data from the input pins. The next rising edge is the next instruction's first rising edge.
 
