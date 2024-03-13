@@ -144,6 +144,7 @@ namespace HoflettMicroP
                 immediate |= (instruction & 0b10000000000000000000000000000000) >> 19;
                 immediate |= immediate << 51;
                 immediate |= immediate >> 51;
+                immediate &=                0b10000000000000000001111111111110;
                 BranchInstruction();
             } else
             if(opcode == JALop){
